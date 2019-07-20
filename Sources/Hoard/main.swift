@@ -8,14 +8,14 @@ struct DevEnvironmentProgram {
     func run() throws {
         let tc = TerminalController(stream: stdoutStream)
         let parser = ArgumentParser(commandName: nil,
-                                    usage: "--config [SUBCOMMAND]",
+                                    usage: "[--config <config_path>] <command>",
                                     overview: "DevEnvironment will collect your files and commit them to your repo where they are stored")
         let config = parser.add(option: "--config",
                                 shortName: "-c",
                                 kind: String.self,
                                 usage: "A path to your configuration for the utility",
                                 completion: .filename)
-        _ = parser.add(subparser: "collect", overview: "collect [--config dev-environment.yml]")
+        _ = parser.add(subparser: "collect", overview: "collect")
 
         let args = Array(CommandLine.arguments.dropFirst())
         let result: ArgumentParser.Result
