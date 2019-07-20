@@ -9,7 +9,7 @@ let package = Package(
         .macOS(.v10_14)
     ],
     products: [
-        .executable(name: "devenv", targets: ["Hoard"])
+        .executable(name: "hoard", targets: ["Hoard"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.1.0"),
