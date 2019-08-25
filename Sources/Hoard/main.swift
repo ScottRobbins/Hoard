@@ -15,7 +15,15 @@ struct DevEnvironmentProgram {
                                 kind: String.self,
                                 usage: "A path to your configuration for the utility",
                                 completion: .filename)
-        _ = parser.add(subparser: "collect", overview: "collect")
+        let collectParser = parser.add(subparser: "collect", overview: "collect")
+        let shouldPushOption = collectParser.add(option: "--shouldPush",
+                                           shortName: "-p",
+                                           kind: Bool.self,
+                                           usage: "Should this command automatically push to your remote git repository?",
+                                           completion: .values([
+                                            (value: "true", description: "Automatically push to remote git repository"),
+                                            (value: "false", description: "Do not automatically push to remote git repository")
+                                           ]))
 
         let args = Array(CommandLine.arguments.dropFirst())
         let result: ArgumentParser.Result
@@ -51,7 +59,8 @@ struct DevEnvironmentProgram {
 
         switch subparser {
         case "collect":
-            try CollectCommand(config: hoardConfig).run()
+            try CollectCommand(config: hoardConfig,
+                               shouldPush: result.get(shouldPushOption)).run()
         default:
             tc?.writeln("Internal Error, could not find subparser for known command", inColor: .red, bold: true)
             exit(1)
