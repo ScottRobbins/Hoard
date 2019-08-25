@@ -7,6 +7,12 @@ import Foundation
 struct CollectCommand {
 
     let config: HoardConfig
+    let shouldPush: Bool
+
+    init(config: HoardConfig, shouldPush: Bool?) {
+        self.config = config
+        self.shouldPush = shouldPush ?? true
+    }
 
     func run() throws {
         let tc = TerminalController(stream: stdoutStream)
@@ -42,7 +48,11 @@ struct CollectCommand {
         }
 
         try? git.commit("-m", "Updated Files")
-        try? git.push()
+
+        if shouldPush {
+            try? git.push()
+        }
+
         tc?.write("Successfully collected and updated files, ", inColor: .green)
         tc?.writeln("validate there were no git errors above", inColor: .green, bold: true)
     }
