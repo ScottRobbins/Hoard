@@ -2,6 +2,7 @@ import Foundation
 import SPMUtility
 import Basic
 import Yams
+import Files
 
 struct DevEnvironmentProgram {
 
@@ -9,14 +10,14 @@ struct DevEnvironmentProgram {
         let tc = TerminalController(stream: stdoutStream)
         let parser = ArgumentParser(commandName: nil,
                                     usage: "[--config <config_path>] <command>",
-                                    overview: "DevEnvironment will collect your files and commit them to your repo where they are stored")
+                                    overview: "Hoard will collect your files and commit them to your repo where they are stored")
         let config = parser.add(option: "--config",
                                 shortName: "-c",
                                 kind: String.self,
                                 usage: "A path to your configuration for the utility",
                                 completion: .filename)
         let collectParser = parser.add(subparser: "collect", overview: "collect")
-        let shouldPushOption = collectParser.add(option: "--shouldPush",
+        let shouldPushOption = collectParser.add(option: "--push",
                                            shortName: "-p",
                                            kind: Bool.self,
                                            usage: "Should this command automatically push to your remote git repository?",
@@ -37,23 +38,31 @@ struct DevEnvironmentProgram {
             exit(1)
         }
 
-        guard let subparser = result.subparser(parser),
-            let configFilepath = result.get(config) else
-        {
+        guard let subparser = result.subparser(parser) else {
             tc?.writeln("Could not parse arguments", inColor: .red, bold: true)
             tc?.writeln("")
             parser.printUsage(on: stdoutStream)
             exit(1)
         }
 
+        let errorMessage: String
+        let configFilePath: String
+        if let _configFilePath = result.get(config) {
+            errorMessage = "Could not parse config file at \(_configFilePath)"
+            configFilePath = _configFilePath
+        } else {
+            errorMessage = "Could not find config file at ~/.hordconfig and none was specified"
+            configFilePath = "~/.hoardconfig"
+        }
+
         let hoardConfig: HoardConfig
         do {
-            let configYamlString = try String(contentsOfFile: configFilepath)
+            let configYamlString = try File(path: configFilePath).readAsString()
             let decoder = YAMLDecoder()
             hoardConfig = try decoder.decode(HoardConfig.self, from: configYamlString)
         } catch let error {
             tc?.writeln(error.localizedDescription)
-            tc?.writeln("Could not parse config file at \(configFilepath)", inColor: .red, bold: true)
+            tc?.writeln(errorMessage, inColor: .red, bold: true)
             exit(1)
         }
 
