@@ -37,23 +37,31 @@ struct DevEnvironmentProgram {
             exit(1)
         }
 
-        guard let subparser = result.subparser(parser),
-            let configFilepath = result.get(config) else
-        {
+        guard let subparser = result.subparser(parser) else {
             tc?.writeln("Could not parse arguments", inColor: .red, bold: true)
             tc?.writeln("")
             parser.printUsage(on: stdoutStream)
             exit(1)
         }
 
+        let errorMessage: String
+        let configFilePath: String
+        if let _configFilePath = result.get(config) {
+            errorMessage = "Could not parse config file at \(_configFilePath)"
+            configFilePath = _configFilePath
+        } else {
+            errorMessage = "Could not find config file at ~/.hordconfig and none was specified"
+            configFilePath = "~/.hoardconfig"
+        }
+
         let hoardConfig: HoardConfig
         do {
-            let configYamlString = try String(contentsOfFile: configFilepath)
+            let configYamlString = try File(path: configFilePath).readAsString()
             let decoder = YAMLDecoder()
             hoardConfig = try decoder.decode(HoardConfig.self, from: configYamlString)
         } catch let error {
             tc?.writeln(error.localizedDescription)
-            tc?.writeln("Could not parse config file at \(configFilepath)", inColor: .red, bold: true)
+            tc?.writeln(errorMessage, inColor: .red, bold: true)
             exit(1)
         }
 
