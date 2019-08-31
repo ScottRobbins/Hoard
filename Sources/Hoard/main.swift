@@ -2,6 +2,7 @@ import Foundation
 import SPMUtility
 import Basic
 import Yams
+import Files
 
 struct DevEnvironmentProgram {
 
@@ -9,7 +10,7 @@ struct DevEnvironmentProgram {
         let tc = TerminalController(stream: stdoutStream)
         let parser = ArgumentParser(commandName: nil,
                                     usage: "[--config <config_path>] <command>",
-                                    overview: "DevEnvironment will collect your files and commit them to your repo where they are stored")
+                                    overview: "Hoard will collect your files and commit them to your repo where they are stored")
         let config = parser.add(option: "--config",
                                 shortName: "-c",
                                 kind: String.self,
