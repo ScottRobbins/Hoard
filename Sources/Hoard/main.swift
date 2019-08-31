@@ -10,13 +10,14 @@ struct DevEnvironmentProgram {
         let tc = TerminalController(stream: stdoutStream)
         let parser = ArgumentParser(commandName: nil,
                                     usage: "[--config <config_path>] <command>",
-                                    overview: "Hoard will collect your files and commit them to your repo where they are stored")
+                                    overview: "Hoard will collect/distribute your files to/from a defined repo")
         let config = parser.add(option: "--config",
                                 shortName: "-c",
                                 kind: String.self,
                                 usage: "A path to your configuration for the utility",
                                 completion: .filename)
-        let collectParser = parser.add(subparser: "collect", overview: "collect")
+        let collectParser = parser.add(subparser: "collect",
+                                       overview: "Collect your files and commit them to your repo where they are stored")
         let shouldPushOption = collectParser.add(option: "--push",
                                            shortName: "-p",
                                            kind: Bool.self,
