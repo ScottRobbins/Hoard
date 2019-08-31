@@ -17,7 +17,7 @@ struct DevEnvironmentProgram {
                                 usage: "A path to your configuration for the utility",
                                 completion: .filename)
         let collectParser = parser.add(subparser: "collect", overview: "collect")
-        let shouldPushOption = collectParser.add(option: "--shouldPush",
+        let shouldPushOption = collectParser.add(option: "--push",
                                            shortName: "-p",
                                            kind: Bool.self,
                                            usage: "Should this command automatically push to your remote git repository?",
