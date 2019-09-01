@@ -11,16 +11,15 @@ extension File {
         return try copy(to: folder)
     }
 
-    func rename(to newName: String, keepExtension: Bool = true, overwrite: Bool) throws {
+    func rename(to newName: String, overwrite: Bool) throws {
         if overwrite {
-            let fullNewFileName = [newName, self.extension].compactMap { $0 }.joined(separator: ".")
-            if let parent = parent, let file = try? parent.file(named: fullNewFileName) {
+            if let parent = parent, let file = try? parent.file(named: newName) {
                 try file.delete()
-            } else if let file = try? File(path: fullNewFileName) {
+            } else if let file = try? File(path: newName) {
                 try file.delete()
             }
         }
 
-        try rename(to: newName, keepExtension: keepExtension)
+        try rename(to: newName, keepExtension: false)
     }
 }
