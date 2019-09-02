@@ -1,4 +1,4 @@
-This document contains licensing information relating to the use of free and open-source software that may be contained in portions of this product. I thank the contributors of these open source projects!
+This document contains licensing information relating to the use of free and open-source software used in this product. I thank the contributors of these open source projects!
 
 ---
 
