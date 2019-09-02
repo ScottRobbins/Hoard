@@ -19,6 +19,10 @@ struct Git {
          try run(["push"] + args)
     }
 
+    func pull(_ args: String...) throws {
+        try run(["pull"] + args)
+    }
+
     private func run(_ args: [String]) throws {
         let fullArgs = ["git", "-C", repoLocation] + args
         tc?.writeln(fullArgs.map { $0.replacingOccurrences(of: " ", with: "\\ ") }.joined(separator: " "),

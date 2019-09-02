@@ -38,7 +38,7 @@ struct CollectCommand {
                 tc?.writeln("Copying \(file.path) to \(destinationFolder.path)", inColor: .cyan)
                 let copiedFile = try File(path: file.path).copy(to: destinationFolder, overwrite: true)
                 tc?.writeln("Renaming file to \(file.identifier)", inColor: .cyan)
-                try copiedFile.rename(to: file.identifier, keepExtension: true, overwrite: true)
+                try copiedFile.rename(to: file.identifier, overwrite: true)
                 try git.add(copiedFile.path(relativeTo: destinationRepo))
             } catch let error {
                 tc?.writeln(error.localizedDescription)
