@@ -26,6 +26,7 @@ struct DevEnvironmentProgram {
                                             (value: "true", description: "Automatically push to remote git repository"),
                                             (value: "false", description: "Do not automatically push to remote git repository")
                                            ]))
+        parser.add(subparser: "distribute", overview: "distribute")
 
         let args = Array(CommandLine.arguments.dropFirst())
         let result: ArgumentParser.Result
@@ -52,7 +53,7 @@ struct DevEnvironmentProgram {
             errorMessage = "Could not parse config file at \(_configFilePath)"
             configFilePath = _configFilePath
         } else {
-            errorMessage = "Could not find config file at ~/.hordconfig and none was specified"
+            errorMessage = "Could not find config file at ~/.hoardconfig and none was specified"
             configFilePath = "~/.hoardconfig"
         }
 
@@ -71,6 +72,8 @@ struct DevEnvironmentProgram {
         case "collect":
             try CollectCommand(config: hoardConfig,
                                shouldPush: result.get(shouldPushOption)).run()
+        case "distribute":
+            try DistributeCommand(config: hoardConfig).run()
         default:
             tc?.writeln("Internal Error, could not find subparser for known command", inColor: .red, bold: true)
             exit(1)
