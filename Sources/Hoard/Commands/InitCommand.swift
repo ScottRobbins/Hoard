@@ -32,7 +32,6 @@ struct InitCommand {
             exit(1)
         }
 
-
         tc?.writeln("Writing to file at \(fileLocation)", inColor: .cyan)
         try fileString.write(toFile: fileLocation, atomically: true, encoding: .utf8)
         tc?.writeln("Successfully created config at \(fileLocation)", inColor: .green)
