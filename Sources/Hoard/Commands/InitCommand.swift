@@ -12,6 +12,13 @@ struct InitCommand {
 
         let fileManager = FileManager.default
         let currentDirectoryPath = FileManager.default.currentDirectoryPath
+
+        guard try Folder(path: currentDirectoryPath).containsSubfolder(named: ".git") else {
+            tc?.writeln("Cannot verify this as a git repo. Run init command from the base directory of your repo",
+                        inColor: .red)
+            exit(1)
+        }
+
         let hoardConfig = HoardConfig(repoPath: currentDirectoryPath,
                                       files: [.init(identifier: "hoardconfig.yml", path: "~/.hoardconfig")])
         let encoder = YAMLEncoder()
