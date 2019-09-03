@@ -1,7 +1,7 @@
 import Files
 
-struct HoardConfig: Decodable {
-    struct File: Decodable {
+struct HoardConfig: Codable {
+    struct File: Codable {
         let identifier: String
         let path: String
     }

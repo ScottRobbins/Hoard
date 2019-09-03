@@ -6,6 +6,8 @@ import Files
 
 struct DevEnvironmentProgram {
 
+    let tc = TerminalController(stream: stdoutStream)
+
     func run() throws {
         let tc = TerminalController(stream: stdoutStream)
         let parser = ArgumentParser(commandName: nil,
@@ -16,6 +18,7 @@ struct DevEnvironmentProgram {
                                 kind: String.self,
                                 usage: "A path to your configuration for the utility",
                                 completion: .filename)
+        parser.add(subparser: "init", overview: "Add .hoardconfig to home directory")
         let collectParser = parser.add(subparser: "collect",
                                        overview: "Collect your files and commit them to your repo where they are stored")
         let shouldPushOption = collectParser.add(option: "--push",
@@ -47,6 +50,23 @@ struct DevEnvironmentProgram {
             exit(1)
         }
 
+        switch subparser {
+        case "init":
+            try InitCommand().run()
+        case "collect":
+            let hoardConfig = getConfig(result: result, config: config)
+            try CollectCommand(config: hoardConfig,
+                               shouldPush: result.get(shouldPushOption)).run()
+        case "distribute":
+            let hoardConfig = getConfig(result: result, config: config)
+            try DistributeCommand(config: hoardConfig).run()
+        default:
+            tc?.writeln("Internal Error, could not find subparser for known command", inColor: .red, bold: true)
+            exit(1)
+        }
+    }
+
+    func getConfig(result: ArgumentParser.Result, config: OptionArgument<String>) -> HoardConfig {
         let errorMessage: String
         let configFilePath: String
         if let _configFilePath = result.get(config) {
@@ -57,25 +77,13 @@ struct DevEnvironmentProgram {
             configFilePath = "~/.hoardconfig"
         }
 
-        let hoardConfig: HoardConfig
         do {
             let configYamlString = try File(path: configFilePath).readAsString()
             let decoder = YAMLDecoder()
-            hoardConfig = try decoder.decode(HoardConfig.self, from: configYamlString)
+            return try decoder.decode(HoardConfig.self, from: configYamlString)
         } catch let error {
             tc?.writeln(error.localizedDescription)
             tc?.writeln(errorMessage, inColor: .red, bold: true)
-            exit(1)
-        }
-
-        switch subparser {
-        case "collect":
-            try CollectCommand(config: hoardConfig,
-                               shouldPush: result.get(shouldPushOption)).run()
-        case "distribute":
-            try DistributeCommand(config: hoardConfig).run()
-        default:
-            tc?.writeln("Internal Error, could not find subparser for known command", inColor: .red, bold: true)
             exit(1)
         }
     }
