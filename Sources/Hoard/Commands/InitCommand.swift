@@ -25,6 +25,14 @@ struct InitCommand {
         let fileString = try encoder.encode(hoardConfig)
         let fileLocation = fileManager.homeDirectoryForCurrentUser.appendingPathComponent(".hoardconfig").path
 
+        guard try Folder(path: fileManager.homeDirectoryForCurrentUser.path)
+            .containsFile(named: ".hoardconfig") == false else
+        {
+            tc?.writeln("~/.hoardconfig already exists", inColor: .red)
+            exit(1)
+        }
+
+
         tc?.writeln("Writing to file at \(fileLocation)", inColor: .cyan)
         try fileString.write(toFile: fileLocation, atomically: true, encoding: .utf8)
         tc?.writeln("Successfully created config at \(fileLocation)", inColor: .green)
