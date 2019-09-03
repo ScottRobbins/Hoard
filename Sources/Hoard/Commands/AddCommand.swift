@@ -28,7 +28,7 @@ struct AddCommand {
             .files
             .appending(.init(identifier: identifier,
                              path: file.path))
-            .sorted { $0.identifier < $1.identifier }
+            .sorted { $0.identifier.lowercased() < $1.identifier.lowercased() }
         let newConfig = HoardConfig(repoPath: config.repoPath,
                                     files: newFiles)
         let encoder = YAMLEncoder()
