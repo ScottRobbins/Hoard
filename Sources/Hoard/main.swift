@@ -18,6 +18,11 @@ struct DevEnvironmentProgram {
                                 kind: String.self,
                                 usage: "A path to your configuration for the utility",
                                 completion: .filename)
+        let addParser = parser.add(subparser: "add", overview: "Add a file to your hoardconfig")
+        let addFile = addParser.add(positional: "file",
+                      kind: String.self,
+                      usage: "The path to the file you want to add",
+                      completion: .filename)
         parser.add(subparser: "init", overview: "Add .hoardconfig to home directory")
         let collectParser = parser.add(subparser: "collect",
                                        overview: "Collect your files and commit them to your repo where they are stored")
@@ -29,7 +34,8 @@ struct DevEnvironmentProgram {
                                             (value: "true", description: "Automatically push to remote git repository"),
                                             (value: "false", description: "Do not automatically push to remote git repository")
                                            ]))
-        parser.add(subparser: "distribute", overview: "distribute")
+        parser.add(subparser: "distribute",
+                   overview: "Distribute files from your repo to the file's locations specified in your config")
 
         let args = Array(CommandLine.arguments.dropFirst())
         let result: ArgumentParser.Result
@@ -51,6 +57,17 @@ struct DevEnvironmentProgram {
         }
 
         switch subparser {
+        case "add":
+            let hoardConfig = getConfig(result: result, config: config)
+
+            guard let addFile = result.get(addFile) else {
+                tc?.writeln("Did not specify file to add to config", inColor: .red)
+                exit(1)
+            }
+
+            try AddCommand(config: hoardConfig,
+                           filePath: addFile,
+                           configPath: result.get(config) ?? "~/.hoardconfig").run()
         case "init":
             try InitCommand().run()
         case "collect":
