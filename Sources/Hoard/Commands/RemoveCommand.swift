@@ -15,7 +15,7 @@ struct RemoveCommand {
         let identifier = self.identifier ?? getIdentifier()
 
         guard (config.files.contains { $0.identifier == identifier }) else {
-            tc?.writeln(#"No file exists in \#(configPath) with the identifier "\#(identifier)""#, inColor: .green)
+            tc?.writeln(#"No file exists in \#(configPath) with the identifier "\#(identifier)""#, inColor: .yellow)
             exit(0)
         }
 
