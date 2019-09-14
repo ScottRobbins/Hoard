@@ -23,6 +23,11 @@ struct DevEnvironmentProgram {
                       kind: String.self,
                       usage: "The path to the file you want to add",
                       completion: .filename)
+        let removeParser = parser.add(subparser: "remove", overview: "Remove a file from your hoardconfig")
+        let removeIdentifier = removeParser.add(positional: "identifier",
+                      kind: String.self,
+                      optional: true,
+                      usage: "The identifier of the file you want to remove")
         parser.add(subparser: "init", overview: "Add .hoardconfig to home directory")
         let collectParser = parser.add(subparser: "collect",
                                        overview: "Collect your files and commit them to your repo where they are stored")
@@ -68,6 +73,12 @@ struct DevEnvironmentProgram {
             try AddCommand(config: hoardConfig,
                            filePath: addFile,
                            configPath: result.get(config) ?? "~/.hoardconfig").run()
+        case "remove":
+            let hoardConfig = getConfig(result: result, config: config)
+
+            try RemoveCommand(config: hoardConfig,
+                              identifier: result.get(removeIdentifier),
+                              configPath: result.get(config) ?? "~/.hoardconfig").run()
         case "init":
             try InitCommand().run()
         case "collect":
