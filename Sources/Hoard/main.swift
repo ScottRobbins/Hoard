@@ -20,25 +20,25 @@ struct DevEnvironmentProgram {
                                 completion: .filename)
         let addParser = parser.add(subparser: "add", overview: "Add a file to your hoardconfig")
         let addFile = addParser.add(positional: "file",
-                      kind: String.self,
-                      usage: "The path to the file you want to add",
-                      completion: .filename)
+                                    kind: String.self,
+                                    usage: "The path to the file you want to add",
+                                    completion: .filename)
         let removeParser = parser.add(subparser: "remove", overview: "Remove a file from your hoardconfig")
         let removeIdentifier = removeParser.add(positional: "identifier",
-                      kind: String.self,
-                      optional: true,
-                      usage: "The identifier of the file you want to remove")
+                                                kind: String.self,
+                                                optional: true,
+                                                usage: "The identifier of the file you want to remove")
         parser.add(subparser: "init", overview: "Add .hoardconfig to home directory")
         let collectParser = parser.add(subparser: "collect",
                                        overview: "Collect your files and commit them to your repo where they are stored")
         let shouldPushOption = collectParser.add(option: "--push",
-                                           shortName: "-p",
-                                           kind: Bool.self,
-                                           usage: "Should this command automatically push to your remote git repository?",
-                                           completion: .values([
-                                            (value: "true", description: "Automatically push to remote git repository"),
-                                            (value: "false", description: "Do not automatically push to remote git repository")
-                                           ]))
+                                                 shortName: "-p",
+                                                 kind: Bool.self,
+                                                 usage: "Should this command automatically push to your remote git repository?",
+                                                 completion: .values([
+                                                    (value: "true", description: "Automatically push to remote git repository"),
+                                                    (value: "false", description: "Do not automatically push to remote git repository")
+                                                 ]))
         parser.add(subparser: "distribute",
                    overview: "Distribute files from your repo to the file's locations specified in your config")
 

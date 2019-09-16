@@ -5,19 +5,19 @@ import SPMUtility
 import Foundation
 
 struct CollectCommand {
-
+    
     let config: HoardConfig
     let shouldPush: Bool
-
+    
     init(config: HoardConfig, shouldPush: Bool?) {
         self.config = config
         self.shouldPush = shouldPush ?? true
     }
-
+    
     func run() throws {
         let tc = TerminalController(stream: stdoutStream)
         tc?.writeln("Running collect...", inColor: .cyan)
-
+        
         let destinationRepo: Folder
         let destinationRepoPath: String
         do {
@@ -29,7 +29,7 @@ struct CollectCommand {
             tc?.writeln("Could not parse path to destination repo", inColor: .red, bold: true)
             exit(1)
         }
-
+        
         let git = Git(repoLocation: destinationRepoPath)
         tc?.writeln("Creating bucket if needed", inColor: .cyan)
         let destinationFolder = try Folder(path: destinationRepoPath).createSubfolderIfNeeded(withName: "bucket")
@@ -46,13 +46,13 @@ struct CollectCommand {
                 exit(1)
             }
         }
-
+        
         try? git.commit("-m", "Updated Files")
-
+        
         if shouldPush {
             try? git.push()
         }
-
+        
         tc?.write("Successfully collected and updated files, ", inColor: .green)
         tc?.writeln("validate there were no git errors above", inColor: .green, bold: true)
     }
