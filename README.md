@@ -12,7 +12,7 @@ A simple tool to allow backing up files to a git repository and keeping them in 
 To build and install locally:
 
 ```console
-$ ./install_release.sh
+$ make install
 ```
 
 ### Usage
