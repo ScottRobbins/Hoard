@@ -9,7 +9,13 @@ A simple tool to allow backing up files to a git repository and keeping them in 
 
 ### Installation
 
-To build and install locally:
+To install from Homebrew:
+
+```console
+$ brew install scottrobbins/formulae/hoard
+```
+
+To build and install manually:
 
 ```console
 $ make install
