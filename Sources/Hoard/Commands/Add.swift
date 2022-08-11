@@ -1,26 +1,41 @@
-import Yams
+import ArgumentParser
 import Files
-import Basic
-import SPMUtility
 import Foundation
+import Rainbow
+import Yams
 
-struct AddCommand {
+struct Add: ParsableCommand {
+    static var configuration = CommandConfiguration(
+        commandName: "add",
+        abstract: "Add a file to your hoardconfig"
+    )
 
-    let config: HoardConfig
-    let filePath: String
-    let configPath: String
+    @Argument(
+        help: .init(
+            "The path to the file you want to add"
+        )
+    )
+    var filePath: String
+    
+    func validate() throws {
+        guard !filePath.isEmpty else {
+            throw ValidationError("Invalid file path")
+        }
+    }
 
     func run() throws {
-        let tc = TerminalController(stream: stdoutStream)
+        let configLoader = ConfigurationLoader()
+        let config = try configLoader.load()
+        let configPath = configLoader.configPath
+        
         let file: File
         do {
             file = try File(path: filePath)
         } catch {
-            tc?.writeln("Could not find file at path \(filePath)", inColor: .red)
-            exit(1)
+            throw ValidationError("Could not find file at path \(filePath)".red)
         }
 
-        tc?.write("Enter identifier for file (press enter to use filename as identifier): ")
+        print("Enter identifier for file (press enter to use filename as identifier): ")
         let input = (readLine() ?? "").trimmingCharacters(in: .whitespaces)
         let identifier = input.isEmpty ? file.name : input
 
@@ -35,10 +50,9 @@ struct AddCommand {
         let fileString = try encoder.encode(newConfig)
 
         let fullConfigPath = try File(path: configPath).path
-        tc?.writeln("Adding file to \(configPath)", inColor: .cyan)
+        print("Adding file to \(configPath)".cyan)
         try fileString.write(toFile: fullConfigPath, atomically: true, encoding: .utf8)
-        tc?.writeln("Successfully added \(identifier) to \(configPath)",
-            inColor: .green)
+        print("Successfully added \(identifier) to \(configPath)".green)
     }
 }
 

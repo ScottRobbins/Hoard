@@ -1,22 +1,23 @@
-import Yams
+import ArgumentParser
 import Files
-import Basic
-import SPMUtility
 import Foundation
+import Rainbow
+import Yams
 
-struct InitCommand {
+struct Init: ParsableCommand {
+    static var configuration = CommandConfiguration(
+        commandName: "init",
+        abstract: "Add .hoardconfig to home directory"
+    )
     
     func run() throws {
-        let tc = TerminalController(stream: stdoutStream)
-        tc?.writeln("Running init...", inColor: .cyan)
+        print("Running init...".cyan)
         
         let fileManager = FileManager.default
         let currentDirectoryPath = FileManager.default.currentDirectoryPath
         
         guard try Folder(path: currentDirectoryPath).containsSubfolder(named: ".git") else {
-            tc?.writeln("Cannot verify this as a git repo. Run init command from the base directory of your repo",
-                        inColor: .red)
-            exit(1)
+            throw HoardError("Cannot verify this as a git repo. Run init command from the base directory of your repo".red)
         }
         
         let hoardConfig = HoardConfig(repoPath: currentDirectoryPath,
@@ -28,12 +29,11 @@ struct InitCommand {
         guard try Folder(path: fileManager.homeDirectoryForCurrentUser.path)
             .containsFile(named: ".hoardconfig") == false else
         {
-            tc?.writeln("~/.hoardconfig already exists", inColor: .red)
-            exit(1)
+            throw HoardError("~/.hoardconfig already exists".red)
         }
         
-        tc?.writeln("Writing to file at \(fileLocation)", inColor: .cyan)
+        print("Writing to file at \(fileLocation)".cyan)
         try fileString.write(toFile: fileLocation, atomically: true, encoding: .utf8)
-        tc?.writeln("Successfully created config at \(fileLocation)", inColor: .green)
+        print("Successfully created config at \(fileLocation)".green)
     }
 }

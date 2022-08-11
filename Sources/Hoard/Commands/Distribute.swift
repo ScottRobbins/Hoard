@@ -1,27 +1,29 @@
-import Yams
+import ArgumentParser
 import Files
-import Basic
-import SPMUtility
 import Foundation
+import Rainbow
+import Yams
 
-struct DistributeCommand {
-    
-    let config: HoardConfig
+struct Distribute: ParsableCommand {
+    static var configuration = CommandConfiguration(
+        commandName: "distribute",
+        abstract: "Distribute files from your repo to the file's locations specified in your config"
+    )
     
     func run() throws {
-        let tc = TerminalController(stream: stdoutStream)
-        tc?.writeln("Running distribute...", inColor: .cyan)
+        let config = try ConfigurationLoader().load()
+        
+        print("Running distribute...".cyan)
         
         let bucketRepo: Folder
         let bucketRepoPath: String
         do {
             bucketRepo = try Folder(path: config.repoPath)
             bucketRepoPath = bucketRepo.path
-            tc?.writeln("Successfully parsed config", inColor: .green)
+            print("Successfully parsed config".green)
         } catch let error {
-            tc?.writeln(error.localizedDescription)
-            tc?.writeln("Could not parse path to repo", inColor: .red, bold: true)
-            exit(1)
+            print(error.localizedDescription)
+            throw HoardError("Could not parse path to repo".red.bold)
         }
         
         let git = Git(repoLocation: bucketRepoPath)
@@ -31,15 +33,15 @@ struct DistributeCommand {
         for file in config.files {
             if let oldFile = try? File(path: file.path) {
                 let newName = "\(oldFile.name)_hoardcopy"
-                tc?.writeln("Renaming file at \(oldFile.path) to \(newName) avoid losing data because of accidental overwriting", inColor: .cyan)
+                print("Renaming file at \(oldFile.path) to \(newName) avoid losing data because of accidental overwriting".cyan)
                 try oldFile.rename(to: newName, overwrite: true)
             }
             
             let bucketFile = try bucketPath.file(named: file.identifier)
-            tc?.writeln("Copying file \(bucketFile.path) to \(file.path)", inColor: .cyan)
+            print("Copying file \(bucketFile.path) to \(file.path)".cyan)
             _ = try bucketFile.copy(toPath: file.path, overwrite: true)
         }
         
-        tc?.write("Successfully collected and updated files, ", inColor: .green)
+        print("Successfully collected and updated files, ".green)
     }
 }
