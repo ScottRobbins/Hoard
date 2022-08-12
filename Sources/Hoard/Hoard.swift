@@ -9,7 +9,7 @@ struct Hoard: ParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: nil,
         abstract: "Hoard will collect/distribute your files to/from a defined repo",
-        version: "0.2.0",
+        version: "1.1.0",
         subcommands: [
             Add.self,
             Collect.self,
